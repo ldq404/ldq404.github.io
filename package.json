@@ -1,0 +1,7 @@
+{
+  "name": "docs",
+  "preview": true,
+  "scripts": {
+    "dev": "docsify serve -o"
+  }
+}
