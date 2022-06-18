@@ -11,7 +11,7 @@
       filterable
       placeholder="请选择"
       :filter-method="handleFilter"
-      @visible-change="v => !v && (search = '')"
+      @visible-change="v => !v && handleFilter('')"
     >
       <el-option
         v-for="item in options"
@@ -68,8 +68,6 @@ export default {
 
 ?> 针对多选下拉框进行优化, 在清空所有数据前, 进行弹窗询问, `二次确认后再清空所有数据`
 
-- 起因: 我某次操作后台系统的线上角色权限时, 不小心点到了下拉框的清空, 瞬间一身冷汗, 虽然还没有保存, 但还是怕有人粗心大意的点击保存, 才做的这个二次确认的优化
-
 ```vue [App.vue] { ...vueConfig }
 <template>
   <el-select
@@ -119,7 +117,7 @@ export default {
       })
       this.clearResolve = null
       this.value = value
-      await this.$confirm('是否清除所有选中的值?', '提示', {
+      this.$confirm('是否清除所有选中的值?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
