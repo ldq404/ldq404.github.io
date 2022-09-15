@@ -24,7 +24,7 @@
 }
 /* 二级标题 */
 .app-sub-sidebar li a:before {
-  content: "⭐";
+  /* content: "⭐"; */
 }
 .app-sub-sidebar li {
   margin: 6px 0 6px 15px;
@@ -34,7 +34,7 @@
   margin: 6px 0 6px 15px;
 }
 .app-sub-sidebar>.app-sub-sidebar li a:before {
-  content: "📚";
+  /* content: "📚"; */
 }
 /* 增加h5样式 */
 h1, h2, h3, h4, h5, h6 {
@@ -76,9 +76,9 @@ blockquote>ul.task-list:last-child {
 .markdown-section p.warn {
   background-color: rgba(97, 144, 232, 0.3);
 }
-.markdown-section li, .markdown-section li>strong {
+/* .markdown-section li, .markdown-section li>strong {
   color: var(--theme-color,#42b983);
-}
+} */
 .markdown-section li>em {
   font-style: normal;
   color: #34495e;

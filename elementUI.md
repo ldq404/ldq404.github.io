@@ -5,6 +5,53 @@
 
 <br />
 
+### 二次开发 ElementUI 组件
+
+```vue [MyInput.vue] { ...vueConfig }
+<template>
+  <my-input
+    v-model="name"
+    placeholder="请输入"
+    @input="handleInput"
+  >
+    <template slot="prepend">http://</template>
+    <template slot="append">.com</template>
+  </my-input>
+</template>
+
+<script>
+// 子组件
+const MyInput =  {
+  template: `
+    <el-input
+      v-bind="$attrs"
+      v-on="$listeners"
+    >
+      <template v-for="(index, name) in $slots" :slot="name">
+        <slot :name="name" />
+      </template>
+    </el-input>
+  `,
+}
+// 父组件
+export default {
+  components: {
+    'my-input': MyInput
+  },
+  data () {
+    return {
+      name: 'baidu'
+    }
+  },
+  methods: {
+    handleInput (v) {
+      console.log(v)
+    }
+  }
+}
+</script>
+```
+
 ### 下拉框 + 搜索过滤 + 关键词标红
 
 ?> 常见的搜索功能, 当输入内容时, 下拉框里所有匹配的选项会**`自动过滤`**并**`标红显示`**
@@ -97,7 +144,6 @@ export default {
   data() {
     return {
       value: [1, 2, 3, 4],
-      oldVal: [],
       clearResolve: null,
       options: [
         { value: 1, label: '黄金糕' },
@@ -187,6 +233,56 @@ export default {
         type: 'warning'
       }).then(() => {
         this.value = []
+      }, () => {}).finally(() => {
+        this.isCleaning = false
+      })
+    },
+    handleRemove () {
+      this.isRemoveTag = true
+    }
+  }
+}
+</script>
+```
+```vue [MyCascader.vue]
+<template>
+  <el-cascader v-bind="$attrs" v-on="$listeners" @remove-tag="handleRemove">
+    <template v-for="(index, name) in $slots" :slot="name">
+      <slot :name="name"></slot>
+    </template>
+  </el-cascader>
+</template>
+
+<script>
+export default {
+  name: 'MyCascader',
+  data () {
+    return {
+      isRemoveTag: false,
+      isCleaning: false
+    }
+  },
+  watch: {
+    '$attrs.value': function (newVal, oldVal) {
+      if (!this.isRemoveTag && !newVal.length) {
+        this.handleClear(oldVal)
+      }
+      this.isRemoveTag = false
+    }
+  },
+  methods: {
+    handleClear (value) {
+      if (this.isCleaning) return
+      this.isCleaning = true
+      this.$nextTick(() => {
+        this.$emit('input', JSON.parse(JSON.stringify(value)))
+      })
+      this.$confirm('是否清除所有选中的值?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$emit('input', [])
       }, () => {}).finally(() => {
         this.isCleaning = false
       })
