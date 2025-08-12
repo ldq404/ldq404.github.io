@@ -294,3 +294,168 @@ export default {
 }
 </script>
 ```
+
+<br />
+
+### table的表单校验
+
+
+```vue [App.vue] { ...vueConfig }
+<template>
+  <el-form ref="formRef" :model="tableForm">
+    <el-table :data="tableForm.data" border>
+      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="age" label="年龄">
+        <template slot-scope="scope">
+          <el-form-item
+            :prop="`data.${scope.$index}.age`"
+            :rules="tableForm.rules.age"
+          >
+            <el-input v-model="scope.row.age" />
+          </el-form-item>
+        </template>
+      </el-table-column>
+    </el-table>
+    <br />
+    <el-form-item>
+      <el-button type="primary" @click="handleValidate">校验</el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        tableForm: {
+          data: [{ name: '张三' }],
+          rules: {
+            age: [
+              { required: true, message: '必填', trigger: 'blur' }
+            ],
+          }
+        }
+      }
+    },
+    mounted () {
+      setTimeout(this.handleValidate, 100)
+    },
+    methods: {
+      handleValidate () {
+        this.$refs.formRef.validate(validate => {
+          if (!validate) return
+          this.$message.success('校验成功')
+          console.log('tableData:', this.tableForm.data)
+        })
+      }
+    }
+  }
+</script>
+```
+
+<br />
+
+### 树形table的表单校验
+
+
+```vue [App.vue] { ...vueConfig }
+<template>
+  <el-form ref="formRef" :model="tableForm">
+    <el-table
+      row-key="id"
+      :data="tableForm.data"
+      border
+      default-expand-all
+    >
+      <el-table-column prop="name" label="姓名" />
+      <el-table-column prop="age" label="年龄">
+        <template slot-scope="scope">
+          <el-form-item
+            :prop="handleProp(scope.row, 'age')"
+            :rules="tableForm.rules.age"
+          >
+            <el-input v-model="scope.row.age" />
+          </el-form-item>
+        </template>
+      </el-table-column>
+    </el-table>
+    <br />
+    <el-form-item>
+      <el-button type="primary" @click="handleValidate">
+        校验
+      </el-button>
+    </el-form-item>
+  </el-form>
+</template>
+
+<script>
+  export default {
+    data () {
+      return {
+        tableForm: {
+          data: [
+            {
+              id: 1,
+              name: '张三',
+              children: [
+                {
+                  id: 2,
+                  name: '李四',
+                  children: [
+                    {
+                      id: 3,
+                      name: '王五',
+                      children: [
+                        {
+                          id: 4,
+                          name: '赵六',
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          rules: {
+            age: [
+              { required: true, message: '必填', trigger: 'blur' }
+            ],
+          }
+        }
+      }
+    },
+    mounted () {
+      setTimeout(this.handleValidate, 100)
+    },
+    methods: {
+      handleProp (row, key, list = this.tableForm.data, fieldName = 'data') {
+        // data.0.age
+        // data.0.children.0.age
+        // data.0.children.0.children.age
+        for (let i = 0; i < list.length; i++) {
+          const item = list[i]
+          if (item === row) {
+            return `${fieldName}.${i}.${key}`
+          }
+          if (item.children && item.children.length) {
+            const next = `${fieldName}.${i}.children`
+            const res = this.handleProp(row, key, item.children, next)
+            if (res) {
+              return res
+            }
+          }
+        }
+        return ''
+      },
+      handleValidate () {
+        this.$refs.formRef.validate(validate => {
+          if (!validate) return
+          this.$message.success('校验成功')
+          console.log('tableData:', this.tableForm.data)
+        })
+      }
+    }
+  }
+</script>
+```
