@@ -1,114 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>学习笔记</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta name="description" content="Description">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-  <link rel="stylesheet" href="./lib/vue.css">
-  <link rel="stylesheet" href="./lib/main.css">
+  <link rel="stylesheet" href="./docsify-theme/macos.css" />
 </head>
 <body>
-  <style>
-    .mini-sandbox {
-      margin: 20px 0;
-      border: 2px solid #b9d2ff;
-      border-radius: 5px;
-      box-shadow: 0 2px 12px 0 rgba(94, 144, 232, 0.5);
-    }
-  </style>
-  <div id="app"></div>
-  <script src="https://unpkg.com/mini-sandbox@0.3.15/dist/vue-loader.js"></script>
-  <script src="https://unpkg.com/mini-sandbox@0.3.15/dist/react-loader.js"></script>
+  <div id="app">正在加载...</div>
   <script>
-    var mobile = window.innerWidth < 769
     window.$docsify = {
-      name: 'Home',
-      nameLink: '/',
-      // 主题色
-      themeColor: '#6190e8',
-      // 入口文件
-      // homepage: 'home.md',
-      // 右上方渲染github挂钟
-      repo: 'buuing',
-      // 定制侧边栏
+      name: '首页',
       loadSidebar: true,
-      // 抓取目录渲染
-      maxLevel: 3,
-      subMaxLevel: 3,
-      // 开启封面页
-      coverpage: false,
-      // 切换页面后跳到顶部
-      auto2top: false,
-      // 小屏设备下合并导航栏到侧边栏
-      mergeNavbar: true,
-      alias: {
-        '/web/_sidebar.md': '/_sidebar.md', // See #301
-      },
-      // 搜索框
+      subMaxLevel: 6,
+      homepage: 'README.md',
+      auto2top: true,
+      themeColor: '#007aff',
       search: {
-        // 目录
         paths: 'auto',
-        // 默认文字
-        placeholder: '搜索',
-        // 404显示
-        noData: '找不到结果'
-      },
-      executeScript: true,
-      // 代码沙盒
-      sandboxOptions: {
-        loaders: {
-          '.vue': SandboxVueLoader,
-          '.jsx': SandboxReactLoader,
-        },
-        defaultConfig: {
-          editorRange: mobile ? '0%' : '50%',
-          draggable: !mobile,
-        }
+        placeholder: '搜索学习内容',
+        noData: '没有找到相关内容'
       }
-    }
-    var vueConfig = {
-      cssLibs: [
-        'https://unpkg.com/element-ui/lib/theme-chalk/index.css'
-      ],
-      jsLibs: [
-        'https://unpkg.com/vue@2.6.14/dist/vue.min.js',
-        'https://unpkg.com/element-ui/lib/index.js',
-      ],
-    }
-    var antdConfig = {
-      importMap: {
-        "imports": {
-          "react": "https://ga.jspm.io/npm:react@17.0.2/index.js",
-          "react-dom": "https://ga.jspm.io/npm:react-dom@17.0.2/index.js",
-          "antd": "https://ga.jspm.io/npm:antd@4.20.1/dist/antd.js",
-          "moment": "https://ga.jspm.io/npm:moment@2.29.3/moment.js",
-          "@lucky-canvas/react": "https://unpkg.com/@lucky-canvas/react@0.1.7/dist/index.esm.js"
-        },
-        "scopes": {
-          "https://ga.jspm.io/": {
-            "object-assign": "https://ga.jspm.io/npm:object-assign@4.1.1/index.js",
-            "scheduler": "https://ga.jspm.io/npm:scheduler@0.20.2/index.js",
-            "scheduler/tracing": "https://ga.jspm.io/npm:scheduler@0.20.2/tracing.js",
-          }
-        }
-      },
-      css: `
-        body { padding: 10px }
-      `,
-      cssLibs: ['https://unpkg.com/antd@4.20.1/dist/antd.min.css'],
-    }
+    };
   </script>
-  <script src="./lib/docsify.min.js"></script>
-  <script src="./lib/search.js"></script>
-  <script src="./lib/docsify-copy-code.js"></script>
-  <script src="./lib/prism-bash.js"></script>
-  <script src="./lib/prism-jsx.js"></script>
-  <script src="./lib/prism-tsx.js"></script>
-  <script src="./lib/prism-typescript.js"></script>
-  <script src="./lib/config.js"></script>
-  <script src="https://unpkg.com/mini-sandbox@0.3.15"></script>
-  <script src="https://unpkg.com/mini-sandbox@0.3.15/dist/docsify-plugin.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <!-- Prism 语言组件：必须在 docsify 之后加载！
+       docsify 4.x 内置打包了 Prism 核心，加载时会用内部核心覆盖 window.Prism，
+       语言组件只有放在 docsify 之后才会注册到它内部的核心上，代码高亮才生效 -->
+  <script src="./lib/prism-bash.min.js"></script>
+  <script src="./lib/prism-go.min.js"></script>
+  <script src="./lib/prism-java.min.js"></script>
+  <script src="./lib/prism-json.min.js"></script>
+  <script src="./lib/prism-jsx.min.js"></script>
+  <script src="./lib/prism-markdown.min.js"></script>
+  <script src="./lib/prism-python.min.js"></script>
+  <script src="./lib/prism-sql.min.js"></script>
+  <script src="./lib/prism-typescript.min.js"></script>
+  <script src="./lib/prism-yaml.min.js"></script>
 </body>
 </html>

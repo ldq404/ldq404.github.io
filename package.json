@@ -2,6 +2,6 @@
   "name": "docs",
   "preview": true,
   "scripts": {
-    "dev": "docsify serve -o"
+    "dev": "python -m http.server 3000 -o"
   }
 }
