@@ -1,5 +1,5 @@
 
-## 学习示例
+## 练习数据集
 
 <details>
 <summary>点击展开 / 收起</summary>
@@ -14,7 +14,7 @@ CREATE TABLE users (
     phone VARCHAR(20) UNIQUE, -- 手机号
     age INTEGER NOT NULL CHECK (age >= 0 AND age <= 150), -- 年龄
     birthday DATE, -- 生日
-    balance NUMERIC(12,2) CHECK (balance >= 0), -- 账户余额
+    balance NUMERIC(12,2) NOT NULL DEFAULT 0 CHECK (balance >= 0), -- 账户余额
     is_active BOOLEAN DEFAULT TRUE, -- 是否启用
     created_at TIMESTAMPTZ DEFAULT NOW(), -- 注册时间
     updated_at TIMESTAMPTZ DEFAULT NOW(), -- 最后修改时间
@@ -147,6 +147,33 @@ CREATE TABLE order_items (
     unit_price NUMERIC(10, 2) NOT NULL, -- 单价
     created_at TIMESTAMP DEFAULT NOW() -- 创建时间
 );
+
+INSERT INTO order_items
+    (order_id, product_id, quantity, unit_price)
+VALUES
+    -- 订单 1：华为 Mate 70 + 每日坚果
+    (1, 1, 1, 4999.00),
+    (1, 5, 2, 39.90),
+    -- 订单 2：无线蓝牙耳机
+    (2, 3, 1, 299.00),
+    -- 订单 3：小米平板 7
+    (3, 2, 1, 2499.00),
+    -- 订单 4：每日坚果 + 纯棉短袖
+    (4, 5, 2, 39.90),
+    (4, 6, 1, 79.00),
+    -- 订单 5：运动鞋 + 保温杯
+    (5, 7, 1, 299.00),
+    (5, 8, 1, 89.00),
+    (5, 4, 4, 2.50),
+    -- 订单 6：Python 编程入门
+    (6, 9, 1, 59.90),
+    -- 订单 7：保湿面霜
+    (7, 11, 1, 129.00),
+    -- 订单 8：登山背包
+    (8, 10, 1, 199.00),
+    -- 订单 9：运动鞋 + 猫抓板
+    (9, 7, 1, 299.00),
+    (9, 12, 1, 35.00);
 ```
 
 </details>
@@ -266,17 +293,17 @@ DROP TABLE users;
 
 ### INSERT 插入
 
-?> 语法模板: `INSERT INTO 表名 (字段1, 字段2) VALUES (值1, 值2), (值3, 值4);`
+?> 语法模板: `INSERT INTO 表名 (字段1, ...) VALUES (值1, ...), (值2, ...);`
 
 ```sql
 -- 插入一条数据
-INSERT INTO users (username, password_hash)
-VALUES ('admin', '123456');
+INSERT INTO users (username, age)
+VALUES ('admin', 0);
 
 -- 插入多条数据
-INSERT INTO users (username, password_hash)
-VALUES ('jack', '111111'),
-       ('ben', '222222');
+INSERT INTO users (username, nickname, age)
+VALUES ('jack88', 'jack', 20),
+       ('ben66', 'ben', 22);
 ```
 
 #### RETURNING 返回结果
@@ -289,8 +316,8 @@ RETURNING 字段1, 字段2;`
 
 ```sql
 -- 插入一条数据并返回对应id
-INSERT INTO users (username, password_hash)
-VALUES ('tom', '666')
+INSERT INTO users (username, age)
+VALUES ('tom', 60)
 RETURNING id;
 ```
 
@@ -303,7 +330,7 @@ RETURNING id;
 SELECT username FROM users;
 
 -- 查询多个字段
-SELECT id, username FROM users;
+SELECT id, username, balance FROM users;
 
 -- 查询所有字段
 SELECT * FROM users;
@@ -324,8 +351,11 @@ SELECT * FROM users;
   - `<=` 小于等于
 
 ```sql
--- 查询admin用户信息
-SELECT * FROM users WHERE username = 'admin';
+-- 查询所有下架的商品
+SELECT * FROM products WHERE is_active = FALSE;
+
+-- 查询价格超过1000的商品
+SELECT * FROM products WHERE price > 1000;
 ```
 
 - 多个条件:
@@ -333,11 +363,11 @@ SELECT * FROM users WHERE username = 'admin';
   - `OR` 或者
 
 ```sql
--- 多个条件同时满足
-SELECT * FROM users WHERE username = 'admin' AND id = 1;
+-- 查询价格大于100并且库存充足的商品
+SELECT * FROM products WHERE price > 100 AND stock > 0;
 
--- 满足任意一个条件
-SELECT * FROM users WHERE username = 'jack' OR username = 'ben';
+-- 查询已下架或库存为0的商品
+SELECT * FROM products WHERE is_active = FALSE OR stock = 0;
 ```
 
 #### LIKE / ILIKE 模糊匹配
@@ -347,26 +377,20 @@ SELECT * FROM users WHERE username = 'jack' OR username = 'ben';
 ?> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '%值%';`
 
 ```sql
--- 查询用户名以 ad 开头的数据
-SELECT * FROM users WHERE username LIKE 'ad%';
+-- 查询名称包含"小米"的商品
+SELECT * FROM products WHERE name LIKE '%小米%';
 
--- 查询用户名以 er 结尾的数据
-SELECT * FROM users WHERE username LIKE '%er';
-
--- 查询用户名包含 min 的数据
-SELECT * FROM users WHERE username LIKE '%min%'
-
--- 查询用户名以 a 开头并且以 n 结尾的数据
-SELECT * FROM users WHERE username LIKE 'a%n';
+-- 查询名称以"耳机"结尾的商品
+SELECT * FROM products WHERE name LIKE '%耳机';
 ```
 
 2. `_`只能用来表示<mark>单个字符</mark>
 
-?> 语法模板: `SELECT * FROM users WHERE username LIKE '值_值';`
+?> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '值_值';`
 
 ```sql
--- 查询用户名中间几个不确定字符的数据
-SELECT * FROM users WHERE username LIKE 'a_m_n';
+-- 查询小米所有系列的平板
+SELECT * FROM products WHERE name LIKE '小米平板 _';
 ```
 
 3. `ILIKE` 则用来表示不区分大小写
@@ -374,54 +398,54 @@ SELECT * FROM users WHERE username LIKE 'a_m_n';
 ?> 语法模板: `SELECT * FROM 表名 WHERE 字段 ILIKE 值`
 
 ```sql
--- 无论用户名是 admin / Admin / ADMIN 都能查出来
-SELECT * FROM users WHERE username ILIKE 'admin';
+-- 查询所有 meta 系列的商品
+SELECT * FROM products WHERE name ILIKE '%mate%';
 ```
 
 #### IN / NOT IN 集合匹配
 
-如果我要查询某个字段, 是否在这个集合里面, 比如用户名叫 admin 或者 root
+如果我要查询<mark class="orange">已经支付、发货或完成</mark>状态的订单
 
-那我就得写 `SELECT * FROM users WHERE username = 'admin' OR username = 'root';`
+那我就得写 `SELECT * FROM orders WHERE status = 'paid' OR status = 'shipped' OR status = 'completed';`
 
 如果要查询的很多, 就得写一堆 `OR`, 非常的繁琐
 
-此时我们可以用 `IN ('admin', 'root')` 的方式来判断
+此时我们可以用 `IN ('paid', 'shipped', 'completed')` 的方式来判断
 
 ?> 语法模板: `SELECT * FROM 表名 WHERE 字段 IN (值1, 值2, ...);`
 
 ```sql
 -- 查询有没有用户名是 admin 或 root 的数据
-SELECT * FROM users WHERE username IN ('admin', 'root');
+SELECT * FROM orders WHERE status IN ('paid', 'shipped', 'completed');
 ```
 
-同理, 如果我要查询某个不属于这个集合的数据
+同理, 如果我要查询<mark class="orange">未取消、未完成</mark>的订单
 
-就得写`SELECT * FROM users WHERE username != 'admin' AND username != 'root';`
+就得写`SELECT * FROM orders WHERE status != 'cancelled' AND status != 'completed';`
 
-但我们也可以用 `NOT IN ('admin', 'root')` 来代替
+但我们也可以用 `NOT IN ('cancelled', 'completed')` 来代替
 
 ?> 语法模板: `SELECT * FROM 表名 WHERE 字段 NOT IN (值1, 值2, ...);`
 
 ```sql
 -- 查询用户不等于 admin 或 root 的数据
-SELECT * FROM users WHERE username NOT IN ('admin', 'root');
+SELECT * FROM orders WHERE status NOT IN ('cancelled', 'completed');
 ```
 
 #### BETWEEN / NOT BETWEEN 区间匹配
 
 如果我们想判断一个字段的值, 是否在一个区间内, 此时可以使用 `BETWEEN`
 
-比如我们要查询 id 在 2 ~ 5 之间的数据
+比如我们要查询价格在 50 到 300 元之间的商品
 
 ?> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 BETWEEN 最小值 AND 最大值;`
 
 ```sql
--- 查询 id 在[2, 5]这个区间内的数据
-SELECT * FROM users WHERE id BETWEEN 2 AND 5;
+-- 查询价格在 50 到 300 元之间的商品
+SELECT * FROM products WHERE price BETWEEN 50 AND 300;
 
 -- 等价于这种写法
-SELECT * FROM users WHERE id >= 2 AND id <= 5;
+SELECT * FROM products WHERE price >= 50 AND price <= 300;
 ```
 
 与之对应的还有 `NOT BETWEEN` 不在这个区间内
@@ -429,11 +453,11 @@ SELECT * FROM users WHERE id >= 2 AND id <= 5;
 ?> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 NOT BETWEEN 最小值 AND 最大值;`
 
 ```sql
--- 查询 id 不在 [2, 5] 这个区间内的数据
-SELECT * FROM users WHERE id NOT BETWEEN 2 AND 5;
+-- 查询价格不在 100 至 500 元之间的商品
+SELECT * FROM products WHERE price NOT BETWEEN 100 AND 500;
 
 -- 等价于这种写法
-SELECT * FROM users WHERE id < 2 OR id > 5;
+SELECT * FROM products WHERE price < 100 OR price > 500;
 ```
 
 
@@ -460,16 +484,88 @@ SELECT * FROM users WHERE phone IS NOT NULL;
 ?> 语法模板：`COALESCE(值1, 值2, ...)`
 
 ```sql
-SELECT COALESCE(phone, '未填写') FROM users;
+SELECT id, name, COALESCE(description, '暂无描述') FROM products;
 ```
 
 #### DISTINCT 去重
 
+如果想对查询结果去重, 则需要使用 DISTINCT 来实现, 并且 DISTINCT 要跟在 SELECT 后面
 
+?> 语法模板: `SELECT DISTINCT 字段 FROM 表名;`
+
+```sql
+-- 查询所有用户的年龄并去重
+SELECT DISTINCT age FROM users;
+```
 
 #### CASE 条件表达式
 
-#### 聚合函数（COUNT/SUM/AVG/MIN/MAX）
+可以把 CASE 理解为 SQL 里的 `if / else`
+
+?> 模板语法:
+`CASE`  
+`WHEN 条件1 THEN 结果1`  
+`WHEN 条件2 THEN 结果2`  
+`ELSE 结果3`  
+`END`
+
+```sql
+-- 假如我们想根据实际库存判断商品状态
+SELECT
+    id,
+    name,
+    stock,
+    CASE
+        WHEN stock = 0 THEN '缺货'
+        WHEN stock < 20 THEN '库存紧张'
+        ELSE '库存充足'
+    END AS stock_status
+FROM products;
+```
+
+
+#### COUNT / SUM / AVG / MIN / MAX 聚合函数
+
+> 聚合函数可以帮助我们把多行数据计算成一个结果
+
+1. <line>COUNT 统计数量</line>
+
+```sql
+-- 统计有多少个商品
+SELECT COUNT(*) FROM products;
+
+-- 统计有多少个描述不为空的商品
+SELECT COUNT(description) FROM products;
+```
+
+2. <line>SUM 求和</line>
+
+```sql
+-- 把所有商品库存加起来
+SELECT SUM(stock) FROM products;
+```
+
+3. <line>AVG 平均值</line>
+
+```sql
+-- 查询所有商品的平均价格
+SELECT AVG(price) from products;
+```
+
+4. <line>MIN 最小值</line>
+
+```sql
+-- 查询最便宜的商品
+SELECT MIN(price) from products;
+```
+
+5. <line>MAX 最大值</line>
+
+```sql
+-- 查询最贵的商品
+SELECT MAX(price) from products;
+```
+
 
 #### GROUP BY 分组
 
@@ -485,17 +581,17 @@ SELECT COALESCE(phone, '未填写') FROM users;
 - `DESC` 降序
 
 ```sql
--- 升序查询
-SELECT * FROM users ORDER BY created_at;
-SELECT * FROM users ORDER BY created_at ASC;
+-- 商品价格从低到高
+SELECT * FROM products ORDER BY price;
+SELECT * FROM products ORDER BY price ASC;
 
--- 降序查询
-SELECT * FROM users ORDER BY created_at DESC;
+-- 商品价格从高到低
+SELECT * FROM products ORDER BY price DESC;
 ```
 
 #### LIMIT / OFFSET 分页
 
-- **适用语句：** SELECT（PostgreSQL 的 UPDATE / DELETE 不支持 LIMIT / OFFSET，需分页请改用其他写法）
+- **适用语句：** SELECT（PostgreSQL 的 <mark>UPDATE / DELETE 不支持 LIMIT / OFFSET</mark>，需分页请改用其他写法）
 
 ?> 语法模板: `SELECT 字段 FROM 表名 LIMIT 数量 OFFSET 数量;`
 
@@ -503,14 +599,11 @@ SELECT * FROM users ORDER BY created_at DESC;
 - `OFFSET` 跳过数据
 
 ```sql
--- 查询10条数据
-SELECT * FROM users LIMIT 10;
+-- 按商品价格从高到低查询前 5 个商品
+SELECT * FROM products ORDER BY price DESC LIMIT 5;
 
--- 分页查询第 1~10 条数据
-SELECT * FROM users LIMIT 10 OFFSET 0;
-
--- 分页查询第 11~20 条数据
-SELECT * FROM users LIMIT 10 OFFSET 10;
+-- 查询第 2 页, 每页 5 条
+SELECT * FROM products ORDER BY price DESC LIMIT 5 OFFSET 5;
 ```
 
 ### UPDATE 修改
@@ -518,13 +611,14 @@ SELECT * FROM users LIMIT 10 OFFSET 10;
 ?> 语法模板: `UPDATE 表名 SET 字段1 = 新值1, 字段2 = 新值2 WHERE 条件;`
 
 ```sql
--- 把admin用户的密码改成888
-UPDATE users SET password_hash = '888' WHERE username = 'admin';
+-- 将库存为 0 的商品全部下架
+UPDATE products SET is_active = FALSE WHERE stock = 0;
 
--- 同时修改多个字段
-UPDATE users
-SET username = 'root', password_hash = '999'
-WHERE id = 1;
+-- 把所有账户余额是 NULL 的用户都修复成 0
+UPDATE users SET balance = 0 WHERE balance IS NULL;
+
+-- 给50岁以上的用户增加500元余额
+UPDATE users SET balance = balance + 500 WHERE age > 50;
 ```
 
 ### DELETE 删除
@@ -532,14 +626,8 @@ WHERE id = 1;
 ?> 语法模板: `DELETE FROM 表名 WHERE 条件;`
 
 ```sql
--- 删除单条数据
-DELETE FROM users WHERE id = 1;
-
--- 删除多条数据
-DELETE FROM users WHERE id > 1;
-
--- 删除所有数据
-DELETE FROM users;
+-- 删除某个用户
+DELETE FROM users WHERE id = 9;
 ```
 
 
