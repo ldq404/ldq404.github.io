@@ -569,7 +569,39 @@ SELECT MAX(price) from products;
 
 #### GROUP BY 分组
 
-#### HAVING 分组过滤
+`GROUP BY` 的作用是按照指定字段进行分组，然后对每个分组进行统计。
+
+!> 并且`SELECT`查询的字段要<line class="red">满足以下条件之一</line>：<mark class="red">出现在 `GROUP BY` 中</mark> 或 <mark class="red">被聚合函数处理</mark>
+
+<line>分组后，每个组产生一条结果；聚合函数负责计算这个组的统计值。</line>
+
+?> 语法模板: `SELECT 分组字段, 聚合函数(字段) FROM 表名 GROUP BY 分组字段`
+
+```sql
+-- 每个分类有多少商品
+SELECT category_id, COUNT(*) FROM products GROUP BY category_id;
+
+-- 每个分类的平均价格
+SELECT category_id, AVG(price) FROM products GROUP BY category_id;
+
+-- 每个分类的总库存
+SELECT category_id, SUM(stock) FROM products GROUP BY category_id;
+```
+
+
+#### HAVING 过滤分组
+
+官方定义: `WHERE`在分组前过滤, `HAVING`在`GROUP BY`分组之后过滤
+
+?> 语法模板: `SELECT 分组字段, 聚合函数(统计字段) FROM 表名 GROUP BY 分组字段 HAVING 条件`
+
+```sql
+-- 只查看平均价格超过200元的商品分类
+SELECT category_id, AVG(price) AS avg_price FROM products GROUP BY category_id HAVING AVG(price) > 200;
+
+-- 查询商品数量超过2个的商品分类
+SELECT category_id FROM products GROUP BY category_id HAVING COUNT(*) > 2;
+```
 
 #### ORDER BY 排序
 
@@ -591,7 +623,7 @@ SELECT * FROM products ORDER BY price DESC;
 
 #### LIMIT / OFFSET 分页
 
-- **适用语句：** SELECT（PostgreSQL 的 <mark>UPDATE / DELETE 不支持 LIMIT / OFFSET</mark>，需分页请改用其他写法）
+- **适用语句：** SELECT（<mark class="yellow">PostgreSQL 的 UPDATE / DELETE 不支持 LIMIT / OFFSET</mark>，需分页请改用其他写法）
 
 ?> 语法模板: `SELECT 字段 FROM 表名 LIMIT 数量 OFFSET 数量;`
 
@@ -631,13 +663,94 @@ DELETE FROM users WHERE id = 9;
 ```
 
 
-## 表关系与关联查询
+## 连表查询
 
 ### JOIN
 
 #### INNER JOIN（取两表交集）
 
-#### LEFT JOIN（左表全保留，右表无匹配补 NULL；足够用，不单独学 RIGHT JOIN）
+官方定义：对于左表的一行，只有右表存在满足 JOIN 条件的行时，才会产生连接结果。
+
+?> 语法模板: `SELECT 表1.字段, 表2.字段 FROM 表1 INNER JOIN 表2 ON 表1.字段 = 表2.字段`
+
+```sql
+-- 查询所有订单, 并显示下单用户的用户名
+SELECT
+    orders.id, users.username
+FROM orders
+INNER JOIN users
+    ON orders.user_id = users.id;
+
+-- 统计每个用户下了多少单
+SELECT
+    u.id,
+    u.username,
+    COUNT(*) AS order_count
+FROM users AS u
+INNER JOIN orders AS o
+    ON u.id = o.user_id
+GROUP BY
+    u.id,
+    u.username;
+```
+
+!> 如果只写`JOIN`也是可以的, 因为`JOIN`默认就是`INNER JOIN`
+
+#### LEFT JOIN（左表全保留，右表无匹配补 NULL）
+
+`LEFT JOIN`会保留左表中的所有记录, 而`INNER JOIN`只会保留交集, 但如果出现没关联到的数据, 则会给对应字段默认填充`NULL`
+
+```sql
+-- 查询所有用户, 以及每个用户的订单数量
+SELECT
+    u.id,
+    u.username,
+    COUNT(o.id) AS order_count
+FROM users AS u
+LEFT JOIN orders AS o
+    ON u.id = o.user_id
+GROUP BY
+    u.id,
+    u.username;
+```
+
+对于`LEFT JOIN`来说, 还有一个地方需要额外补充, <mark class="yellow">那就是`ON`后面可以跟条件</mark>
+
+`ON`条件和`WHERE`条件会产生不同的结果
+
+- ON→ 决定「能不能关联上」
+- WHERE→ 决定「关联完成后留不留下」
+
+```sql
+-- 没有条件的情况下: 会查询出所有用户及其订单
+SELECT
+    u.username,
+    o.id,
+    o.status
+FROM users AS u
+LEFT JOIN orders AS o
+    ON u.id = o.user_id;
+
+-- 条件在 ON: 所有用户都会保留, 但只有 paid 状态的订单可以关联
+SELECT
+    u.username,
+    o.id,
+    o.status
+FROM users AS u
+LEFT JOIN orders AS o
+    ON u.id = o.user_id
+    AND o.status = 'paid';
+
+-- 条件在 WHERE: 关联完成后, 只保留 paid 状态的数据
+SELECT
+    u.username,
+    o.id,
+    o.status
+FROM users AS u
+LEFT JOIN orders AS o
+    ON u.id = o.user_id
+WHERE o.status = 'paid';
+```
 
 #### 自连接与多表连接
 
@@ -697,18 +810,3 @@ DELETE FROM users WHERE id = 9;
 ### 对话历史表设计
 
 - `sessions` + `messages` 两表 + JSONB 存 `tool_calls` / LLM 结构化输出（agent 开发最高频的建表模式）
-
-
-## 了解即可（DBA 向，先放着）
-
-### SAVEPOINT（暂跳过，全栈基本用不到）
-
-### 物化视图 MATERIALIZED VIEW
-
-### EXCLUDE 约束
-
-### 备份恢复 pg_dump / pg_restore
-
-### 权限 GRANT / REVOKE
-
-### 隔离级别深讲 / EXPLAIN 深究性能调优

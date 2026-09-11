@@ -12,7 +12,7 @@
     window.$docsify = {
       name: '首页',
       loadSidebar: true,
-      subMaxLevel: 6,
+      subMaxLevel: 3,
       homepage: 'README.md',
       auto2top: true,
       themeColor: '#007aff',
@@ -20,7 +20,70 @@
         paths: 'auto',
         placeholder: '搜索学习内容',
         noData: '没有找到相关内容'
-      }
+      },
+      plugins: [function (hook) {
+        var ticking = false;
+
+        function syncSidebarActive(event) {
+          // 捕获正文滚动，忽略目录自身的滚动，避免手动浏览目录时被拉回。
+          if (event && event.type === 'scroll' &&
+              event.target !== document && event.target !== window) return;
+          if (ticking) return;
+          var sidebar = document.querySelector('.sidebar');
+          if (!sidebar) return;
+          // 在 Docsify 默认滚动监听之前保留目录位置，统一高亮和滚动的目标。
+          var previousScrollTop = sidebar.scrollTop;
+          ticking = true;
+          requestAnimationFrame(function () {
+            ticking = false;
+            var headings = Array.prototype.slice.call(
+              document.querySelectorAll('.markdown-section h1[id], .markdown-section h2[id], .markdown-section h3[id], .markdown-section h4[id], .markdown-section h5[id], .markdown-section h6[id]')
+            ).filter(function (heading) { return heading.getClientRects().length > 0; });
+            if (!headings.length) return;
+
+            var current = headings[0];
+            headings.forEach(function (heading) {
+              if (heading.getBoundingClientRect().top <= 120) current = heading;
+            });
+
+            var links = sidebar.querySelectorAll('.sidebar-nav a');
+            var activeLink = null;
+            links.forEach(function (link) {
+              var href = link.getAttribute('href') || '';
+              var id = href.indexOf('?id=') >= 0 ? href.split('?id=')[1] : '';
+              if (id && decodeURIComponent(id) === current.id) {
+                activeLink = link;
+              }
+            });
+            if (!activeLink) return;
+            sidebar.querySelectorAll('.sidebar-nav li.active').forEach(function (item) {
+              if (item !== activeLink.parentElement) item.classList.remove('active');
+            });
+            activeLink.parentElement.classList.add('active');
+
+            var sidebarRect = sidebar.getBoundingClientRect();
+            var linkRect = activeLink.getBoundingClientRect();
+            // 使用同一视口坐标系，避免嵌套列表的 offsetTop 参照不同。
+            var linkTop = linkRect.top - sidebarRect.top - sidebar.clientTop + sidebar.scrollTop;
+            var nextScrollTop = previousScrollTop;
+            var topGap = 16;
+            var bottomGap = 54; // 给底部收起按钮留出空间。
+            if (linkTop < previousScrollTop + topGap) {
+              nextScrollTop = linkTop - topGap;
+            } else if (linkTop + linkRect.height > previousScrollTop + sidebar.clientHeight - bottomGap) {
+              nextScrollTop = linkTop + linkRect.height - sidebar.clientHeight + bottomGap;
+            }
+            nextScrollTop = Math.max(0, Math.min(nextScrollTop, sidebar.scrollHeight - sidebar.clientHeight));
+            if (sidebar.scrollTop !== nextScrollTop) sidebar.scrollTop = nextScrollTop;
+          });
+        }
+
+        hook.doneEach(function () {
+          syncSidebarActive();
+        });
+        window.addEventListener('scroll', syncSidebarActive, { passive: true, capture: true });
+        window.addEventListener('resize', syncSidebarActive);
+      }]
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/docsify@4"></script>
