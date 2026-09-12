@@ -230,25 +230,25 @@ VALUES
 
 ### 面试题
 
-?> **`INTEGER` 和 `BIGINT` 有什么区别?**  
+> **`INTEGER` 和 `BIGINT` 有什么区别?**  
 *INTEGER 表示32位整数, 取值范围是正负 21 亿*  
 *BIGINT 表示64位整数, 取值范围是正负 922 万亿亿*  
 *他俩主要就是取值范围和存储空间的区别*
 
-?> **`VARCHAR(50)` 指的是什么意思?**  
+> **`VARCHAR(50)` 指的是什么意思?**  
 *VARCHAR 表示可变字符串, 括号里的数字表示最多存储50个字符*
 
-?> **`PRIMARY KEY` 和 `UNIQUE` 有什么区别?**  
+> **`PRIMARY KEY` 和 `UNIQUE` 有什么区别?**  
 *前者用来表示主键, 并且一张表里只能存在一个主键, 自带 NOT NULL 属性, 后者用来表示唯一不可重复, 并且可以出现多次, 也可以为 NULL*
 
-?> **`SERIAL` 的自增原理是什么?**  
+> **`SERIAL` 的自增原理是什么?**  
 *我理解的就是做了三件事, 先创建 INTEGER 32位整数字段, 然后创建一个 SEQUENCE 用来生成和维护递增序列, 相当于一个发牌器, 然后给字段设置一个 DEFAULT nextval(), 其中nextval用来取值, 最后通过 DEFAULT 关键词设置默认值*
 
-?> **PostgreSQL 有几种自增机制, 各有什么优缺点?**  
+> **PostgreSQL 有几种自增机制, 各有什么优缺点?**  
 *<mark class="blue">SERIAL</mark> 伪类型, 属于传统写法, 优点是书写简单好记, 缺点 Sequence 是隐式创建和关联的，结构管理不如 Identity 直观*  
 *<mark class="">GENERATED xxx AS IDENTITY</mark> 更现代的写法, Identity 列, 语义明确, 有 <mark class="blue">ALWAYS</mark> 和 <mark class="blue">BY DEFAULT</mark> 两种规则, 默认由数据库自动生成, 前者是默认不可指定, 后者是可以显式的指定*
 
-?> **如何判断一个 NULL 类型?**  
+> **如何判断一个 NULL 类型?**  
 *可以使用 <mark>WHERE 字段 IS NULL</mark> 或者 <mark>WHERE 字段 IS NOT NULL</mark> 来判断, <line>不能直接通过 NULL = NULL</line>, 否则就会得到一个 UNKNOWN, 因为 sql 里 NULL 与任何值比较, 都会得到一个 UNKNOWN*
 
 
@@ -305,7 +305,7 @@ DROP TABLE users;
 
 ### INSERT 插入
 
-?> 语法模板: `INSERT INTO 表名 (字段1, ...) VALUES (值1, ...), (值2, ...);`
+> 语法模板: `INSERT INTO 表名 (字段1, ...) VALUES (值1, ...), (值2, ...);`
 
 ```sql
 -- 插入一条数据
@@ -322,7 +322,7 @@ VALUES ('jack88', 'jack', 20),
 
 - **适用语句：** INSERT、UPDATE、DELETE（返回受影响行的字段值；SELECT 本身就返回数据，故不需要 RETURNING）
 
-?> 语法模板: `INSERT INTO 表名 (字段)
+> 语法模板: `INSERT INTO 表名 (字段)
 VALUES (值)
 RETURNING 字段1, 字段2;`
 
@@ -335,7 +335,7 @@ RETURNING id;
 
 ### SELECT 查询
 
-?> 语法模板: `SELECT 字段 FROM 表名;`
+> 语法模板: `SELECT 字段 FROM 表名;`
 
 ```sql
 -- 查询单个字段
@@ -352,7 +352,7 @@ SELECT * FROM users;
 
 - **适用语句：** SELECT、UPDATE、DELETE（用于筛选要操作的数据行）
 
-?> 语法模板: `SELECT 字段 FROM 表名 WHERE 条件;`
+> 语法模板: `SELECT 字段 FROM 表名 WHERE 条件;`
 
 - 条件:
   - `=` 等于
@@ -386,7 +386,7 @@ SELECT * FROM products WHERE is_active = FALSE OR stock = 0;
 
 1. `%`可以用来表示<mark>任意字符</mark> <mark>0 到 n 个字符</mark>
 
-?> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '%值%';`
+> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '%值%';`
 
 ```sql
 -- 查询名称包含"小米"的商品
@@ -398,7 +398,7 @@ SELECT * FROM products WHERE name LIKE '%耳机';
 
 2. `_`只能用来表示<mark>单个字符</mark>
 
-?> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '值_值';`
+> 语法模板: `SELECT * FROM 表名 WHERE 字段 LIKE '值_值';`
 
 ```sql
 -- 查询小米所有系列的平板
@@ -407,7 +407,7 @@ SELECT * FROM products WHERE name LIKE '小米平板 _';
 
 3. `ILIKE` 则用来表示不区分大小写
 
-?> 语法模板: `SELECT * FROM 表名 WHERE 字段 ILIKE 值`
+> 语法模板: `SELECT * FROM 表名 WHERE 字段 ILIKE 值`
 
 ```sql
 -- 查询所有 meta 系列的商品
@@ -424,7 +424,7 @@ SELECT * FROM products WHERE name ILIKE '%mate%';
 
 此时我们可以用 `IN ('paid', 'shipped', 'completed')` 的方式来判断
 
-?> 语法模板: `SELECT * FROM 表名 WHERE 字段 IN (值1, 值2, ...);`
+> 语法模板: `SELECT * FROM 表名 WHERE 字段 IN (值1, 值2, ...);`
 
 ```sql
 -- 查询有没有用户名是 admin 或 root 的数据
@@ -437,7 +437,7 @@ SELECT * FROM orders WHERE status IN ('paid', 'shipped', 'completed');
 
 但我们也可以用 `NOT IN ('cancelled', 'completed')` 来代替
 
-?> 语法模板: `SELECT * FROM 表名 WHERE 字段 NOT IN (值1, 值2, ...);`
+> 语法模板: `SELECT * FROM 表名 WHERE 字段 NOT IN (值1, 值2, ...);`
 
 ```sql
 -- 查询用户不等于 admin 或 root 的数据
@@ -450,7 +450,7 @@ SELECT * FROM orders WHERE status NOT IN ('cancelled', 'completed');
 
 比如我们要查询价格在 50 到 300 元之间的商品
 
-?> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 BETWEEN 最小值 AND 最大值;`
+> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 BETWEEN 最小值 AND 最大值;`
 
 ```sql
 -- 查询价格在 50 到 300 元之间的商品
@@ -462,7 +462,7 @@ SELECT * FROM products WHERE price >= 50 AND price <= 300;
 
 与之对应的还有 `NOT BETWEEN` 不在这个区间内
 
-?> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 NOT BETWEEN 最小值 AND 最大值;`
+> 语法模板: `SELECT 字段 FROM 表名 WHERE 字段 NOT BETWEEN 最小值 AND 最大值;`
 
 ```sql
 -- 查询价格不在 100 至 500 元之间的商品
@@ -493,7 +493,7 @@ SELECT * FROM users WHERE phone IS NOT NULL;
 
 `COALESCE()` 函数的作用是从左到右返回第一个非 NULL 的值, 如果所有值都是 NULL，则返回 NULL
 
-?> 语法模板：`COALESCE(值1, 值2, ...)`
+> 语法模板：`COALESCE(值1, 值2, ...)`
 
 ```sql
 SELECT id, name, COALESCE(description, '暂无描述') FROM products;
@@ -503,7 +503,7 @@ SELECT id, name, COALESCE(description, '暂无描述') FROM products;
 
 如果想对查询结果去重, 则需要使用 DISTINCT 来实现, 并且 DISTINCT 要跟在 SELECT 后面
 
-?> 语法模板: `SELECT DISTINCT 字段 FROM 表名;`
+> 语法模板: `SELECT DISTINCT 字段 FROM 表名;`
 
 ```sql
 -- 查询所有用户的年龄并去重
@@ -514,7 +514,7 @@ SELECT DISTINCT age FROM users;
 
 可以把 CASE 理解为 SQL 里的 `if / else`
 
-?> 模板语法:
+> 模板语法:
 `CASE`  
 `WHEN 条件1 THEN 结果1`  
 `WHEN 条件2 THEN 结果2`  
@@ -587,7 +587,7 @@ SELECT MAX(price) from products;
 
 <line>分组后，每个组产生一条结果；聚合函数负责计算这个组的统计值。</line>
 
-?> 语法模板: `SELECT 分组字段, 聚合函数(字段) FROM 表名 GROUP BY 分组字段`
+> 语法模板: `SELECT 分组字段, 聚合函数(字段) FROM 表名 GROUP BY 分组字段`
 
 ```sql
 -- 每个分类有多少商品
@@ -605,7 +605,7 @@ SELECT category_id, SUM(stock) FROM products GROUP BY category_id;
 
 官方定义: `WHERE`在分组前过滤, `HAVING`在`GROUP BY`分组之后过滤
 
-?> 语法模板: `SELECT 分组字段, 聚合函数(统计字段) FROM 表名 GROUP BY 分组字段 HAVING 条件`
+> 语法模板: `SELECT 分组字段, 聚合函数(统计字段) FROM 表名 GROUP BY 分组字段 HAVING 条件`
 
 ```sql
 -- 只查看平均价格超过200元的商品分类
@@ -619,7 +619,7 @@ SELECT category_id FROM products GROUP BY category_id HAVING COUNT(*) > 2;
 
 - **适用语句：** SELECT
 
-?> 语法模板: `SELECT 字段 FROM 表名 ORDER BY 字段;`
+> 语法模板: `SELECT 字段 FROM 表名 ORDER BY 字段;`
 
 - `ASC` 升序 (默认)
 - `DESC` 降序
@@ -637,7 +637,7 @@ SELECT * FROM products ORDER BY price DESC;
 
 - **适用语句：** SELECT（<mark class="yellow">PostgreSQL 的 UPDATE / DELETE 不支持 LIMIT / OFFSET</mark>，需分页请改用其他写法）
 
-?> 语法模板: `SELECT 字段 FROM 表名 LIMIT 数量 OFFSET 数量;`
+> 语法模板: `SELECT 字段 FROM 表名 LIMIT 数量 OFFSET 数量;`
 
 - `LIMIT` 限制返回条数
 - `OFFSET` 跳过数据
@@ -652,7 +652,7 @@ SELECT * FROM products ORDER BY price DESC LIMIT 5 OFFSET 5;
 
 ### UPDATE 修改
 
-?> 语法模板: `UPDATE 表名 SET 字段1 = 新值1, 字段2 = 新值2 WHERE 条件;`
+> 语法模板: `UPDATE 表名 SET 字段1 = 新值1, 字段2 = 新值2 WHERE 条件;`
 
 ```sql
 -- 将库存为 0 的商品全部下架
@@ -667,7 +667,7 @@ UPDATE users SET balance = balance + 500 WHERE age > 50;
 
 ### DELETE 删除
 
-?> 语法模板: `DELETE FROM 表名 WHERE 条件;`
+> 语法模板: `DELETE FROM 表名 WHERE 条件;`
 
 ```sql
 -- 删除某个用户
@@ -683,7 +683,7 @@ DELETE FROM users WHERE id = 9;
 
 官方定义：对于左表的一行，只有右表存在满足 JOIN 条件的行时，才会产生连接结果。
 
-?> 语法模板: `SELECT 表1.字段, 表2.字段 FROM 表1 INNER JOIN 表2 ON 表1.字段 = 表2.字段`
+> 语法模板: `SELECT 表1.字段, 表2.字段 FROM 表1 INNER JOIN 表2 ON 表1.字段 = 表2.字段`
 
 ```sql
 -- 查询所有订单, 并显示下单用户的用户名
@@ -765,7 +765,7 @@ WHERE o.status = 'paid';
 
 #### 多表连接
 
-?> 语法模板: `SELECT ...`  
+> 语法模板: `SELECT ...`  
 `FROM 表1`  
 `JOIN 表2 ON 表1.xxx = 表2.xxx`  
 `JOIN 表3 ON 表2.xxx = 表3.xxx;`

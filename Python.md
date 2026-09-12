@@ -94,7 +94,7 @@ print(name) # 报错 NameError
 
 ### 缩进与代码块
 
-?> Python 最大的语法特点之一就是<mark>没有代码块</mark>的概念, 而是使用缩进来代替, 推荐使用<mark>4个空格</mark>进行缩进
+> Python 最大的语法特点之一就是<mark>没有代码块</mark>的概念, 而是使用缩进来代替, 推荐使用<mark>4个空格</mark>进行缩进
 
 ```py
 # if 后面的 : 表示要开始一个代码块
@@ -248,22 +248,298 @@ print("world") # helloworld
 
 ## 数据类型
 
+py 变量可以通过`type()`查看对象的类型, 类似于 js 的 <mark class="gray">typeof</mark>
+
 ### 数字
+
+1. `int` 整数 *(任意精度整数)*
+
+```py
+age = 20
+num = -100
+
+type(age) # <class 'int'>
+```
+
+!> Python 的`int`没有固定的 32 位 / 64 位整数上限，只受实际内存限制。
+
+
+2. `float` 浮点数
+
+```py
+a = 0.1
+b = 0.2
+
+type(a) # <class 'float'>
+print(a + b) # 0.30000000000000004
+```
+
+!> Python 的`float`和 JS 的 Number 一样，都存在浮点数精度问题。
+
+3. `complex` 复数
+
+```py
+z = 3 + 4j
+
+print(z) # (3+4j)
+```
+
+4. 数字类型转换
+
+- `int()` 转整数
+- `float()` 转浮点数
+- `complex()` 转复数
+
+```py
+int(10.8)   # 10
+float(10)   # 10.0
+complex(10) # (10+0j)
+```
 
 ### 字符串
 
+字符串用<line>单引号</line> / <line>双引号</line>都可以
+
+
+```py
+# 单引号
+name = '张三'
+# 双引号
+name = "李四"
+# 多行字符串
+msg = """
+第一行
+第二行
+第三行
+"""
+
+# 字符串类型
+type(name) # <class 'str'>
+# 字符串长度
+len(name) # 2
+# 字符重复
+hello * 3 # hellohellohello
+```
+
+
 ### 布尔值
 
+Python 的布尔类型是 bool
+
+```py
+is_active = True
+is_deleted = False
+
+# bool 类型转换
+bool(1)       # True
+bool(0)       # False
+bool('hello') # True
+bool('')      # False
+```
+
+以下这些均属于"假值"
+
+```py
+False # False
+None  # False
+0     # False
+0.0   # False
+""    # False
+[]    # False
+()    # False
+{}    # False
+set() # False
+```
+
+!> 还有一个特殊的地方, 在 Python 里`bool`实际上是`int`的子类
+
+```py
+int(True)           # 1
+int(False)          # 0
+print(True + True)  # 2
+print(True + False) # 1
+```
+
 ### None
+
+Python 中的`None`表示没有值 / 值不存在
+
+```py
+name = None
+
+type(name) # <class 'NoneType'>
+```
+
+想要判断是否是`None`, 需要借助`is`和`is not`来判断
+
+```py
+name = None
+
+print(name is None)     # True
+print(name is not None) # False
+```
+
+!> 如果函数没有指定返回值, 则默认返回`None`
+
 
 
 ## 数据结构
 
-### 列表
+### 列表 list
 
-### 元组
+Python 的列表类型是`list`, 官方给其的定义是*可变序列（mutable sequence）*
 
-### 集合
+<line>但是 Python 比 JS 多一个非常好用的特性：<mark>负数下标</mark></line>
+
+```py
+users = ['张三', '李四', '王五']
+nums = [1, 2, 3]
+data = ['小明', 18, True, [1, 2, 3]]
+
+# 正数下标
+print(data[0])  # '小明'
+print(data[99]) # 报错 IndexError
+
+# 负数下标
+print(users[-1])  # '王五'
+print(data[-2]) # True
+```
+
+基础用法
+
+```py
+# 通过字面量的方式创建列表
+arr1 = [1, 2, 3]
+
+# 通过 list 方法创建列表
+arr2 = list((4, 5, 6)) # 从元组转换
+
+# 获取列表长度
+len(arr1) # 3
+
+# 判断是否包含元素
+print(2 in arr1) # True
+
+# 拼接两个列表
+print(arr1 + arr2) # [1, 2, 3, 4, 5, 6]
+
+# 列表重复 n 次
+print(arr2 * 2) # [4, 5, 6, 4, 5, 6]
+```
+
+关于列表的方法
+
+| 方法 | 说明 | 示例 | 返回值 | 原数组 |
+| :- | :- | :- | :- | :- |
+| `append(x)` | 末尾添加元素 | `[1, 2].append(3)` | `None` | `[1, 2, 3]` |
+| `insert(i, x)` | 在 `i` 位置插入元素 | `[1, 3].insert(1, 2)` | `None` | `[1, 2, 3]` |
+| `remove(x)` | 删除第一个等于 `x` 的元素 | `[1, 2, 1].remove(1)` | `None` | `[2, 1]` |
+| `pop()` | 删除并返回末尾元素 | `[1, 2].pop()` | `2` | `[1]` |
+| `pop(i)` | 删除并返回指定位置元素 | `[1, 2].pop(0)` | `1` | `[2]` |
+| `clear()` | 清空列表 | `[1, 2].clear()` | `None` | `[]` |
+| `sort()` | 原地排序 | `[3, 1].sort()` | `None` | `[1, 3]` |
+| `reverse()` | 原地反转 | `[1, 2].reverse()` | `None` | `[2, 1]` |
+
+
+### 元组 tuple
+
+元祖跟列表很像, 但有一点不一样, <line>列表可变, 元祖不可变</line>
+
+```py
+users = ('张三', '李四', '王五')
+nums = (1, 2, 3)
+data = ('小明', 20, True, [1, 2, 3])
+
+users[0]  # '张三'
+users[-1] # '王五'
+
+# 元祖不可变
+users[0] = '小明' # 报错 TypeError
+```
+
+但是元祖有个坑, 如果只有一个元素, 就得多加一个逗号, 否则会识别成其他类型
+
+```py
+type((10))  # int
+type((10,)) # tuple
+```
+
+元祖可以使用`len`和`in`
+
+```py
+nums = (1, 2, 3)
+
+len(nums) # 3
+print(2 in nums) # True
+```
+
+### 集合 set
+
+Python 的集合类型有两个特性, <line class="">1. 不允许重复元素</line>, <line class="">2. 不能通过下标访问</line>, 因为其本身是无序集合, 不记录元素位置
+
+```py
+users = {'张三', '李四', '王五'}
+nums = {1, 2, 3}
+```
+
+如果需要<mark>创建空集合</mark>, 就会出现一个坑
+
+```py
+type({})    # <class 'dict'>
+type(set()) # <class 'set'>
+```
+
+并且集合没有下标, 通过下标访问会报错
+
+```py
+nums = {1, 2, 3}
+nums[0]  # 报错 TypeError
+nums[-1] # 报错 TypeError
+```
+
+集合同样可以使用`len`和`in`
+
+```py
+nums = {1, 2, 3}
+
+len(nums) # 3
+print(2 in nums) # True
+```
+
+集合运算
+
+```py
+a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+
+# 并集 (等价union方法)
+print(a | b) # {1, 2, 3, 4, 5, 6}
+
+# 交集 (等价intersection方法)
+print(a & b)      # {3, 4}
+
+# 差集 (等价difference方法)
+print(a - b)     # {1, 2}
+
+# 对称差集 (等价symmetric_difference方法)
+print(a ^ b)              # {1, 2, 5, 6}
+```
+
+
+关于集合的方法
+
+| 方法 | 说明 | 示例 | 返回值 | 原集合 |
+| :- | :- | :- | :- | :- |
+| `add(x)` | 添加元素 | `{1, 2}.add(3)` | `None` | `{1, 2, 3}` |
+| `remove(x)` | 删除元素，不存在时报错 | `{1, 2}.remove(2)` | `None` | `{1}` |
+| `discard(x)` | 删除元素，不存在不报错 | `{1, 2}.discard(2)` | `None` | `{1}` |
+| `pop()` | 删除并返回任意一个元素 | `{1, 2}.pop()` | 被删的元素（无序） | 移除一个 |
+| `clear()` | 清空集合 | `{1, 2}.clear()` | `None` | `set()` |
+| `union()` | 并集 | `{1, 2}.union({2, 3})` | `{1, 2, 3}` | 无变化 |
+| `intersection()` | 交集 | `{1, 2}.intersection({2, 3})` | `{2}` | 无变化 |
+| `difference()` | 差集 | `{1, 2}.difference({2, 3})` | `{1}` | 无变化 |
+| `symmetric_difference()` | 对称差集 | `{1, 2}.symmetric_difference({2, 3})` | `{1, 3}` | 无变化 |
+
 
 ### 字典
 
