@@ -1,222 +1,606 @@
+## 语法基础
 
-## 一、环境与工具（先跑起来）
+### 注释
 
-!> TODO: Python 安装与版本管理
-!> - 装 Python 3.11+（agent 生态基本都要求 3.10+）
-!> - pyenv（管理多版本，类似前端的 nvm）或系统直接装
-!> - 验证：python --version / pip --version
+py 单行注释使用`#`
 
-!> TODO: 虚拟环境（必学，对应前端 node_modules 隔离）
-!> - python -m venv .venv 创建
-!> - source .venv/Scripts/activate（Windows 激活）
-!> - 退出：deactivate
-!> - 作用：每个项目隔离依赖，避免全局污染（类比前端的 npm init + 局部依赖）
+```py
+# py代码
+name = '张三' # 用户昵称
+```
 
-!> TODO: 包管理与运行
-!> - pip install 包名 / pip install -r requirements.txt
-!> - 推荐新工具 uv（比 pip 快很多，Rust 写的）
-!> - 跑脚本：python main.py
-!> - 交互环境：python 进入 REPL（类似浏览器 console）
+py 没有专门的多行注释语法
 
-!> TODO: 编辑器与调试
-!> - VS Code + Python 插件（你已经会 VS Code）
-!> - 断点调试：和前端几乎一样
-!> - 推荐装 ruff（Lint）、black（格式化）
+```py
+# 第一行注释
+# 第二行注释
+# 第三行注释
+```
 
+虽然可以看到这种写法：
 
-## 二、Python 语法基础（从前端视角切入）
+```py
+"""
+第一行
+第二行
+第三行
+"""
+```
 
-> 你是前端，下面每条都标了「JS 里你已知的对应物」，照着迁移最快。
+但它本质上是一个多行字符串，不是注释。
 
-### 基础类型与变量
-
-!> TODO: 变量与动态类型
-!> - 不用 let/const，直接 name = 'tom'（默认可变）
-!> - 类型靠值推断，但建议写类型注解（见后面 typing 节）
-!> - 没有 var，也没有块级作用域的 let 概念
-
-!> TODO: 基础类型（对比 JS）
-!> - int / float → 对应 JS 的 number（但 Python 区分整数和浮点，没有 NaN 坑少）
-!> - str → 对应 JS string，格式化用 f'hello {name}'（对应模板字符串 `hello ${name}`）
-!> - bool → True / False（首字母大写！JS 是 true/false）
-!> - None → 对应 JS 的 null（不是 undefined，Python 没有 undefined）
-!> - list → 对应 JS Array
-!> - dict → 对应 JS Object（{key: value} 写法一样）
-!> - tuple → 只读的 list（前端没有对应物，记住“创建后不能改”）
-!> - set → 对应 JS Set
-
-### 运算符与字符串
-
-!> TODO: 运算符差异
-!> - 取模 %、幂 **（JS 是 Math.pow）
-!> - 整除 //（向下取整）
-!> - 逻辑：and / or / not（JS 的 && || !）
-!> - 判断相等 ==，身份 is（判同一个对象，少用）
-!> - 没有 ===/!==，Python 的 == 已经比较值（但有坑，先记住基本用法）
-
-!> TODO: 字符串
-!> - f-string：f'{name} 今年 {age} 岁'（最常用）
-!> - 多行字符串：'''长文本'''（对应 JS 模板字符串多行）
-!> - 没有反引号类型，也没有 ${}，统一用 f-string
-
-### 控制流（重点：缩进代替大括号）
-
-!> TODO: if / for / while
-!> - 没有 {}，用缩进表示代码块（这是 Python 最反前端的点，务必习惯）
-!> - if x > 0: 末尾有冒号，下一行缩进 4 空格
-!> - for item in items: 直接遍历（对应 JS for (const item of items)）
-!> - for i in range(10): 生成 0~9（对应 JS for (let i=0; i<10; i++)）
-!> - while 条件: 和 JS 一样
-
-!> TODO: 条件表达式与推导式
-!> - 三元：x if cond else y（对应 JS cond ? x : y）
-!> - 列表推导：[x*2 for x in items]（前端没有，但很像 map+filter 合一，强烈建议掌握）
-!> - 字典推导：{k: v for k, v in d.items()}
-
-### 函数与错误处理
-
-!> TODO: 函数定义
-!> - def 函数名(参数): 冒号 + 缩进（对应 JS function / 箭头函数）
-!> - 返回值：return（没有 return 默认返回 None）
-!> - 默认参数：def f(a, b=10):（对应 JS 默认参数）
-!> - 不定参数：*args（对应 JS ...rest）、**kwargs（对应 JS 展开对象）
-!> - lambda：lambda x: x*2（对应 JS 箭头函数，但只能一行）
-
-!> TODO: 异常处理
-!> - try / except 异常类型 as e: / finally:（对应 JS try / catch(e) / finally）
-!> - 没有 try...catch 关键字，是 try...except
-!> - 主动抛错：raise ValueError('出错')（对应 JS throw）
-
-### 类与模块（面向对象）
-
-!> TODO: 类
-!> - class User: + def __init__(self, name): 构造器（对应 JS constructor）
-!> - self 相当于 JS 的 this，但必须显式写（前端最不习惯的点之一）
-!> - 继承：class Admin(User): 括号里写父类
-!> - 没有 public/private 关键字，约定单下划线 _xxx 表示私有
-
-!> TODO: 模块与导入
-!> - 一个 .py 文件就是一个模块（对应前端一个 module）
-!> - import os（对应 JS import）
-!> - from module import func（对应 JS 具名导入）
-!> - 没有 export 关键字，全靠文件顶层定义 + import
+```py
+# 这种就是 docstring（文档字符串）
+def login():
+    """用户登录"""
+```
 
 
-## 三、类型注解与工程化（全栈必会，agent 开发尤其重要）
 
-!> TODO: 类型注解 typing
-!> - 变量：name: str = 'tom'
-!> - 函数：def add(a: int, b: int) -> int:
-!> - 常用：List[int]、Dict[str, int]、Optional[str]（可能为 None）、Any
-!> - 作用：代码可读 + IDE 补全 + 接 mypy 查错（对应 TS 的 interface/type）
-!> - agent 开发强烈建议学：LLM 框架（如 Pydantic）靠类型定义做数据校验
+### 变量与赋值
 
-!> TODO: Pydantic（数据模型，agent 高频）
-!> - from pydantic import BaseModel
-!> - class User(BaseModel): name: str; age: int
-!> - 自动校验类型、自动解析 JSON（对应 TS 的 zod / interface）
-!> - agent 里常用它定义工具入参、结构化输出
+py 定义变量不需要使用 `var`/`let`/`const`
 
-!> TODO: 项目结构与入口
-!> - if __name__ == '__main__': main()（对应前端的入口判断，避免被 import 时误执行）
-!> - 推荐目录：src/ 放代码、tests/ 放测试、requirements.txt 锁依赖
+```py
+name = "张三" # 字符串类型
+age = 32 # 数字类型
+balance = 1000.50 # 浮点类型
+is_active = True # 布尔类型
+```
 
+py 推荐使用下划线这种命名方式
 
-## 四、Python 与数据库（接上 PostgreSQL.md）
+```py
+user_name = "张三"
+user_age = 32
+is_active = True
+```
 
-!> TODO: 数据库连接驱动
-!> - 同步：psycopg2 / psycopg（最常用）
-!> - 异步：asyncpg（性能更好，agent/接口高并发推荐）
-!> - ORM：SQLAlchemy（对应前端的 Prisma / TypeORM）
-!> - 简单封装：用原生 SQL 也行（你已经会 SQL，混用很常见）
+并且 py 的变量是<mark class="">动态类型</mark>
 
-!> TODO: 执行查询（基础套路）
-!> - 建立连接 conn = psycopg.connect(...)
-!> - 游标 cur = conn.cursor()
-!> - cur.execute('SELECT * FROM users WHERE id = %s', (user_id,))（注意参数用 %s 占位，防注入！对应 JS 的 ? 占位）
-!> - 取结果：cur.fetchall() / fetchone()
-!> - 事务：conn.commit() / conn.rollback()
+```py
+val = 100
+val = 'hello'
+val = True
+```
 
-!> TODO: 防 SQL 注入（重点）
-!> - 永远用参数化查询，不要字符串拼接（对应前端最该养成的习惯）
-!> - f'SELECT * FROM users WHERE name = {name}' 是错的、危险的
+<line>变量没有固定类型，变量只是绑定到一个对象。</line>
 
-!> TODO: ORM 入门（SQLAlchemy）
-!> - 定义表模型 class User(Base): ...
-!> - session.query(User).filter_by(name='tom').all()
-!> - 关系：relationship() 对应你 PostgreSQL.md 里的 FOREIGN KEY
+py 跟 js 一样, 可以多变量赋值
 
+```py
+name, age = '张三', 18
+# 等价于
+name = '张三'
+age = 18
+```
 
-## 五、Web 后端与接口（转全栈核心）
+可以利用这个特性直接交换变量
 
-!> TODO: Web 框架
-!> - FastAPI（推荐，和 agent 生态契合，自带类型 + 自动文档）
-!> - Flask（经典轻量，适合理解原理）
-!> - Django（全家桶，重但功能全）
-!> - 选 FastAPI 起步：类型注解直接复用第三章
+```py
+a = 10
+b = 20
 
-!> TODO: 写一个接口（FastAPI 套路）
-!> - @app.get('/users/{user_id}') 装饰器定义路由（对应前端前端路由的概念）
-!> - 函数参数自动从 path/query/body 解析
-!> - 返回 dict / Pydantic 模型，自动转 JSON（对应前端 res.json()）
-!> - 启动：uvicorn main:app --reload（对应 npm run dev）
+a, b = b, a
+```
 
-!> TODO: 请求与响应
-!> - GET/POST/PUT/DELETE 和前端 fetch 一一对应
-!> - 请求体用 Pydantic 模型接（对应前端 POST 的 JSON body）
-!> - 跨域 CORS：用 fastapi-cors（对应前端遇到的跨域问题）
+py 删除变量跟 js 的 delete 类似
 
-!> TODO: 接口分层
-!> - 路由层（收请求）→ 服务层（写业务逻辑）→ 数据层（查库）
-!> - 对应前端可能没强分层的习惯，后端强烈建议分
+```py
+name = '张三'
+del name
+print(name) # 报错 NameError
+```
 
+### 缩进与代码块
 
-## 六、Agent 开发（你的目标方向）
+?> Python 最大的语法特点之一就是<mark>没有代码块</mark>的概念, 而是使用缩进来代替, 推荐使用<mark>4个空格</mark>进行缩进
 
-!> TODO: LLM SDK
-!> - OpenAI SDK（Python 官方库，最通用）
-!> - Anthropic SDK（claude 官方库）
-!> - 调用套路：client.messages.create(model=..., messages=[...])
+```py
+# if 后面的 : 表示要开始一个代码块
+if age > 18:
+    print('成年人')
+```
 
-!> TODO: Agent 框架
-!> - LangChain（最流行，组件多）
-!> - LlamaIndex（偏 RAG 检索）
-!> - 原生手写（不依赖框架也行，理解原理后更灵活）
-
-!> TODO: 工具调用 Tool Calling
-!> - 用 Pydantic 模型定义工具入参（接第三章）
-!> - 模型返回“要调哪个函数 + 参数”，你执行后再把结果喂回去
-!> - 对应你 PostgreSQL.md 里 JSONB 存 tool_calls 的场景
-
-!> TODO: 记忆与状态持久化
-!> - 接 PostgreSQL：sessions + messages 两表（对应 PostgreSQL.md 的 Agent 场景）
-!> - 向量检索 pgvector（对应 PostgreSQL.md 的向量检索 TODO）
-
-!> TODO: 异步 asyncio（agent 高并发必懂）
-!> - async / await（对应前端 JS 的 async/await，语法几乎一样！）
-!> - 这是 Python 对前端最友好的部分，迁移成本极低
+```py
+# 多层缩进来实现嵌套代码块
+if age > 18:
+    if is_true:
+        print('成年人')
+```
 
 
-## 七、测试与工程实践
+### 运算符
 
-!> TODO: 单元测试 pytest
-!> - 函数名以 test_ 开头，自动发现
-!> - assert 结果 == 预期（对应 JS 的 assert / 测试库 expect）
-!> - 对应前端 jest / vitest
+#### 算术运算符
 
-!> TODO: 虚拟环境与依赖锁定
-!> - requirements.txt（pip freeze > requirements.txt）
-!> - 或用 uv / poetry 管理
+```py
+a + b   # 加
+a - b   # 减
+a * b   # 乘
+a / b   # 除
+a // b  # 地板除
+a % b   # 取余
+a ** b  # 幂
+```
 
-!> TODO: 代码风格
-!> - PEP8（Python 官方风格指南，缩进 4 空格）
-!> - 工具 black（自动格式化，对应 prettier）、ruff（对应 eslint）
+但是需要注意一下, 地板除是向<mark>负无穷</mark>取整
+
+```py
+5 / 2   # 2.5
+5 // 2  # 2
+-5 // 2 # -3
+```
+
+#### 赋值运算符
+
+!> py 没有自增`++`和自减`--`
+
+```py
+num += 1  # 加
+num -= 1  # 减
+num *= 2  # 乘
+num /= 2  # 除
+num //= 2 # 地板除（向负无穷取整）
+num %= 2  # 取余
+num **= 2 # 幂运算
+```
+
+#### 比较运算符
 
 
-## 八、了解即可（先放着，用到再查）
+```py
+# py 没有 a === b
+a == b   # 等于    
+a != b   # 不等于
+a > b    # 大于
+a >= b   # 大于等于
+a < b    # 小于
+a <= b   # 小于等于
+```
 
-- 装饰器进阶（@property / 类装饰器）
-- 生成器 generator / yield（对应 JS generator）
-- 并发：多线程 threading / 多进程 multiprocessing（GIL 限制，了解即可）
-- 元类 metaclass、描述符（偏底层，几乎用不到）
-- 打包发布：poetry / pip 发布到 PyPI
+```py
+# 链式比较
+18 <= age < 60
+# 等价于
+18 <= age and age < 60
+```
+
+#### 成员运算符
+
+`in` / `not in` 是否包含
+
+```py
+username = "张三"
+print(username in ["张三", "李四"])     # True
+print(username not in ["小明", "小红"]) # True
+
+name = '张三'
+print('张' in name) # True
+```
+
+#### 身份运算符
+
+
+`is` / `is not` 是否指向同一个对象
+
+```py
+a = [1, 2, 3]
+b = [1, 2, 3]
+
+print(a == b) # True
+print(a is b) # False
+
+# 比较常见的场景
+name is None
+name is not None
+```
+
+#### 逻辑运算符
+
+- `and` 对应 js 里的 `&&`
+- `or` 对应 js 里的 `||`
+- `not` 对应 js 里的 `!`
+
+```py
+True and True    # True
+True and False   # False
+False and True   # False
+False and False  # False
+
+True or True     # True
+True or False    # True
+False or True    # True
+False or False   # False
+
+not True         # False
+not False        # True
+```
+
+!> `and`/`or` 返回操作数本身，不一定返回 `Boolean`
+
+
+### 输入与输出
+
+- `input` 用来接收用户的输入内容 *(返回的值永远是字符串)*
+- `print` 用来打印输出
+    - `sep` 分隔符 *默认是空格*
+    - `end` 结尾 *默认是换行*
+
+```py
+name = input("请输入姓名：")
+age = 20
+
+# 打印内容
+print(name) # 张三
+
+# 打印多个内容
+print(name, age) # 张三 20
+
+# 指定分隔符
+print(name, age, sep=" / ") # 张三/32
+
+# 指定结尾
+print("hello", end="")
+print("world") # helloworld
+```
+
+
+## 数据类型
+
+### 数字
+
+### 字符串
+
+### 布尔值
+
+### None
+
+
+## 数据结构
+
+### 列表
+
+### 元组
+
+### 集合
+
+### 字典
+
+### 切片
+
+### 解包
+
+### 推导式
+
+
+
+## 流程控制
+
+### 条件判断
+
+### 循环
+
+
+
+## 函数
+
+### 函数定义
+
+### 参数
+
+#### 默认参数
+
+#### 关键字参数
+
+#### *args / **kwargs
+
+### 返回值
+
+### Lambda
+
+### 作用域
+
+
+
+## 核心特性
+
+### 对象与引用
+
+### 可变与不可变
+
+### 浅拷贝与深拷贝
+
+### 迭代器与可迭代对象
+
+### 生成器
+
+### 装饰器
+
+### 上下文管理器
+
+
+
+## 面向对象
+
+### 类与对象
+
+#### class 与 \_\_init\_\_
+
+#### self
+
+#### 属性与方法
+
+#### 类属性
+
+### 继承
+
+### 特殊方法
+
+
+
+## 工程基础
+
+### 异常处理
+
+### 模块与包
+
+### 文件操作
+
+### JSON
+
+### 类型注解
+
+### dataclass 与 Pydantic
+
+### 虚拟环境与依赖管理
+
+#### venv 与 pip
+
+#### pyproject.toml
+
+### 环境变量
+
+### logging
+
+### 测试
+
+
+
+## 异步
+
+### 同步与异步
+
+### 协程
+
+#### async / await
+
+#### coroutine 与 Task
+
+#### asyncio
+
+### 并发模型
+
+#### 并发与并行
+
+#### IO-bound 与 CPU-bound
+
+
+
+## Python + PostgreSQL
+
+### 数据库连接
+
+### 参数化 SQL
+
+### 查询
+
+### 增删改（INSERT / UPDATE / DELETE）
+
+### 事务
+
+### 连接池
+
+
+
+## FastAPI
+
+### HTTP 基础与 REST API
+
+### 路由
+
+### 请求参数
+
+#### Path 参数
+
+#### Query 参数
+
+#### Request Body
+
+### 响应
+
+#### Response 与 Response Model
+
+#### Status Code
+
+#### Header 与 Cookie
+
+### 文件上传
+
+### 核心机制
+
+#### Pydantic
+
+#### 依赖注入
+
+#### 中间件
+
+#### 异常处理
+
+#### CORS
+
+### 认证与权限
+
+#### Authentication
+
+#### JWT
+
+#### 权限控制
+
+### 实时通信
+
+#### SSE
+
+#### WebSocket
+
+
+
+## 全栈开发
+
+### 前后端分离
+
+### API 设计
+
+### 常见功能
+
+#### 登录注册
+
+#### 权限
+
+#### 分页、搜索、排序与筛选
+
+#### 文件上传
+
+### 前端调用 API
+
+#### SSE 流式通信
+
+
+
+## 工程化
+
+### Git
+
+### Docker
+
+#### Docker Compose
+
+### Linux
+
+### Nginx
+
+### 环境变量
+
+### 日志
+
+### 测试
+
+### CI/CD 与部署
+
+### 监控
+
+
+
+## RAG
+
+### 基础概念
+
+#### Embedding
+
+#### 相似度
+
+### 向量与存储
+
+#### Vector
+
+#### pgvector
+
+### 文档处理
+
+#### 文档解析
+
+#### 文本切分与 Chunk
+
+#### Metadata
+
+### 检索
+
+#### Vector Search
+
+#### Hybrid Search
+
+#### Rerank
+
+### 流程与评估
+
+#### RAG Pipeline
+
+#### RAG Evaluation
+
+
+
+## Agent
+
+### Agent 基础
+
+#### Agent 与普通 LLM 应用
+
+#### Agent Loop
+
+### Tool
+
+#### Tool 与 Tool Calling
+
+#### Tool 设计与 Schema
+
+#### Tool 可靠性（权限 / 超时 / 重试 / 幂等）
+
+### 核心机制
+
+#### State 与 Memory
+
+#### Planning
+
+#### 多工具 Agent 与多 Agent
+
+#### Human-in-the-loop
+
+### Agent 工程化
+
+#### Context 与 Token 管理
+
+#### 长任务与 Background Task
+
+#### Agent 状态持久化
+
+#### Trace 与 Evaluation
+
+#### 成本控制
+
+#### 并发控制
+
+
+
+## 综合项目
+
+### 技术栈
+
+#### 前端
+
+#### FastAPI
+
+#### PostgreSQL 与 pgvector
+
+### 核心能力
+
+#### RAG
+
+#### Agent 与 Tool
+
+#### SSE
+
+### 上线
+
+#### Docker
+
+#### 部署
