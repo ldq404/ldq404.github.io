@@ -6,7 +6,7 @@ py 单行注释使用`#`
 
 ```py
 # py代码
-name = '张三' # 用户昵称
+name = "张三" # 用户昵称
 ```
 
 py 没有专门的多行注释语法
@@ -60,7 +60,7 @@ is_active = True
 
 ```py
 val = 100
-val = 'hello'
+val = "hello"
 val = True
 ```
 
@@ -69,9 +69,9 @@ val = True
 py 跟 js 一样, 可以多变量赋值
 
 ```py
-name, age = '张三', 18
+name, age = "张三", 18
 # 等价于
-name = '张三'
+name = "张三"
 age = 18
 ```
 
@@ -87,7 +87,7 @@ a, b = b, a
 py 删除变量跟 js 的 delete 类似
 
 ```py
-name = '张三'
+name = "张三"
 del name
 print(name) # 报错 NameError
 ```
@@ -99,14 +99,14 @@ print(name) # 报错 NameError
 ```py
 # if 后面的 : 表示要开始一个代码块
 if age > 18:
-    print('成年人')
+    print("成年人")
 ```
 
 ```py
 # 多层缩进来实现嵌套代码块
 if age > 18:
     if is_true:
-        print('成年人')
+        print("成年人")
 ```
 
 
@@ -175,8 +175,8 @@ username = "张三"
 print(username in ["张三", "李四"])     # True
 print(username not in ["小明", "小红"]) # True
 
-name = '张三'
-print('张' in name) # True
+name = "张三"
+print("张" in name) # True
 ```
 
 #### 身份运算符
@@ -303,7 +303,7 @@ complex(10) # (10+0j)
 
 ```py
 # 单引号
-name = '张三'
+name = "张三"
 # 双引号
 name = "李四"
 # 多行字符串
@@ -333,8 +333,8 @@ is_deleted = False
 # bool 类型转换
 bool(1)       # True
 bool(0)       # False
-bool('hello') # True
-bool('')      # False
+bool("hello") # True
+bool("")      # False
 ```
 
 以下这些均属于"假值"
@@ -392,9 +392,9 @@ Python 的列表类型是`list`, 官方给其的定义是*可变序列（mutable
 <line>但是 Python 比 JS 多一个非常好用的特性：<mark>负数下标</mark></line>
 
 ```py
-users = ['张三', '李四', '王五']
+users = ["张三", "李四", "王五"]
 nums = [1, 2, 3]
-data = ['小明', 18, True, [1, 2, 3]]
+data = ["小明", 18, True, [1, 2, 3]]
 
 # 正数下标
 print(data[0])  # '小明'
@@ -429,7 +429,7 @@ print(arr2 * 2) # [4, 5, 6, 4, 5, 6]
 
 关于列表的方法
 
-| 方法 | 说明 | 示例 | 返回值 | 原数组 |
+| 方法 | 说明 | 示例 | 返回值 | 原数据 |
 | :- | :- | :- | :- | :- |
 | `append(x)` | 末尾添加元素 | `[1, 2].append(3)` | `None` | `[1, 2, 3]` |
 | `insert(i, x)` | 在 `i` 位置插入元素 | `[1, 3].insert(1, 2)` | `None` | `[1, 2, 3]` |
@@ -446,15 +446,15 @@ print(arr2 * 2) # [4, 5, 6, 4, 5, 6]
 元祖跟列表很像, 但有一点不一样, <line>列表可变, 元祖不可变</line>
 
 ```py
-users = ('张三', '李四', '王五')
+users = ("张三", "李四", "王五")
 nums = (1, 2, 3)
-data = ('小明', 20, True, [1, 2, 3])
+data = ("小明", 20, True, [1, 2, 3])
 
 users[0]  # '张三'
 users[-1] # '王五'
 
 # 元祖不可变
-users[0] = '小明' # 报错 TypeError
+users[0] = "小明" # 报错 TypeError
 ```
 
 但是元祖有个坑, 如果只有一个元素, 就得多加一个逗号, 否则会识别成其他类型
@@ -478,7 +478,7 @@ print(2 in nums) # True
 Python 的集合类型有两个特性, <line class="">1. 不允许重复元素</line>, <line class="">2. 不能通过下标访问</line>, 因为其本身是无序集合, 不记录元素位置
 
 ```py
-users = {'张三', '李四', '王五'}
+users = {"张三", "李四", "王五"}
 nums = {1, 2, 3}
 ```
 
@@ -516,19 +516,19 @@ b = {3, 4, 5, 6}
 print(a | b) # {1, 2, 3, 4, 5, 6}
 
 # 交集 (等价intersection方法)
-print(a & b)      # {3, 4}
+print(a & b) # {3, 4}
 
 # 差集 (等价difference方法)
-print(a - b)     # {1, 2}
+print(a - b) # {1, 2}
 
 # 对称差集 (等价symmetric_difference方法)
-print(a ^ b)              # {1, 2, 5, 6}
+print(a ^ b) # {1, 2, 5, 6}
 ```
 
 
 关于集合的方法
 
-| 方法 | 说明 | 示例 | 返回值 | 原集合 |
+| 方法 | 说明 | 示例 | 返回值 | 原数据 |
 | :- | :- | :- | :- | :- |
 | `add(x)` | 添加元素 | `{1, 2}.add(3)` | `None` | `{1, 2, 3}` |
 | `remove(x)` | 删除元素，不存在时报错 | `{1, 2}.remove(2)` | `None` | `{1}` |
@@ -541,7 +541,73 @@ print(a ^ b)              # {1, 2, 5, 6}
 | `symmetric_difference()` | 对称差集 | `{1, 2}.symmetric_difference({2, 3})` | `{1, 3}` | 无变化 |
 
 
-### 字典
+### 字典 dict
+
+Python 的字典类型跟 JS 的 Map 有点相似, 都是 key-value 键值对的格式
+
+```py
+user = {
+    "name": "张三",
+    "age": 20,
+}
+
+# 使用 dict() 创建
+user = dict(name="张三", age=20)
+```
+
+增删改查
+
+```py
+# 读取
+print(user["name"]) # 张三
+print(user["age"])  # 20
+
+# 更新
+user["age"] = 99
+
+# 新增
+user["sex"] = "男"
+
+# 删除
+del user["age"]
+user.pop("name")
+```
+
+字段同样可以使用len和in
+
+```py
+user = {
+    "name": "张三",
+    "age": 20
+}
+
+# 字典的长度
+len(user) # 2
+
+# 判断属性是否存在
+print("name" in user)  # True
+print("email" in user) # False
+
+# 判断值是否存在
+print("张三" in user.values()) # True
+print(20 in user.values())     # True
+```
+
+关于字典的方法
+
+| 方法 | 说明 | 示例 | 返回值 | 原数据 |
+| :- | :- | :- | :- | :- |
+| `get(key)` | 获取键对应的值，键不存在不报错 | `{"name": "张三"}.get("age")` | `None` | 无变化 |
+| `get(key, 默认值)` | 键不存在时返回默认值 | `{"name": "张三"}.get("age", 0)` | `0` | 无变化 |
+| `keys()` | 获取所有的键 | `{"name": "张三"}.keys()` | `dict_keys(['name'])` | 无变化 |
+| `values()` | 获取所有的值 | `{"name": "张三"}.values()` | `dict_values(['张三'])` | 无变化 |
+| `items()` | 获取所有的键值对 | `{"name": "张三"}.items()` | `dict_items([('name', '张三')])` | 无变化 |
+| `pop(key)` | 删除键值对并返回对应的值，键不存在时报错 | `{"name": "张三", "age": 20}.pop("age")` | `20` | `{"name": "张三"}` |
+| `pop(key, 默认值)` | 键不存在时不报错，返回默认值 | `{"name": "张三"}.pop("age", 0)` | `0` | 无变化 |
+| `update()` | 批量更新或新增键值对 | `{"name": "张三"}.update({"age": 20})` | `None` | `{"name": "张三", "age": 20}` |
+| `clear()` | 清空字典 | `{"name": "张三"}.clear()` | `None` | `{}` |
+
+!> py 里的 `keys()`/`values()`/`items()` 返回的是动态的 view 对象, 当原字典变化时, view 也会跟着一起变化
 
 ### 切片
 
